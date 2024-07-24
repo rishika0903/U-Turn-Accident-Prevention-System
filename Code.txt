@@ -1,0 +1,81 @@
+// Define pins for the first ultrasonic sensor
+const int trigPin1 = 9;
+const int echoPin1 = 10;
+// Define pins for the second ultrasonic sensor
+const int trigPin2 = 11;
+const int echoPin2 = 12;
+// Define pins for the first traffic light (LEDs)
+const int redLight1 = 6;
+const int greenLight1 = 7;
+// Define pins for the second traffic light (LEDs)
+const int redLight2 = 4;
+const int greenLight2 = 5;
+
+// Define the minimum safe distance (in cm)
+const int minDistance = 50;  // Adjust this value based on the U-turn distance requirement
+
+void setup() {
+  // Initialize the serial monitor
+  Serial.begin(9600);
+  // Set up the ultrasonic sensor pins
+  pinMode(trigPin1, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  pinMode(trigPin2, OUTPUT);
+  pinMode(echoPin2, INPUT);
+  // Set up the traffic light pins
+  pinMode(redLight1, OUTPUT);
+  pinMode(greenLight1, OUTPUT);
+  pinMode(redLight2, OUTPUT);
+  pinMode(greenLight2, OUTPUT);
+}
+
+void loop() {
+  // Measure distance with the first ultrasonic sensor
+  int distance1 = measureDistance(trigPin1, echoPin1);
+  // Measure distance with the second ultrasonic sensor
+  int distance2 = measureDistance(trigPin2, echoPin2);
+
+  // Control the first traffic light based on distance1
+  if (distance1 > 0 && distance1 <= minDistance) {
+    digitalWrite(redLight1, HIGH);
+    digitalWrite(greenLight1, LOW);
+  } else {
+    digitalWrite(redLight1, LOW);
+    digitalWrite(greenLight1, HIGH);
+  }
+
+  // Control the second traffic light based on distance2
+  if (distance2 > 0 && distance2 <= minDistance) {
+    digitalWrite(redLight2, HIGH);
+    digitalWrite(greenLight2, LOW);
+  } else {
+    digitalWrite(redLight2, LOW);
+    digitalWrite(greenLight2, HIGH);
+  }
+
+  // Small delay before the next loop
+  delay(100);
+}
+
+// Function to measure distance using an ultrasonic sensor
+int measureDistance(int trigPin, int echoPin) {
+  // Trigger the ultrasonic sensor
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // Read the echo pin
+  long duration = pulseIn(echoPin, HIGH);
+  
+  // Calculate the distance in cm
+  int distance = duration * 0.034 / 2;
+  
+  // Print the distance to the serial monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  
+  return distance;
+}
